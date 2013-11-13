@@ -1,6 +1,8 @@
 package mailbox
 
 import (
+	"os"
+	"errors"
 	"io/ioutil"
 )
 
@@ -36,5 +38,30 @@ func (m *Maildirbox) Mailboxes() []string {
 		}
 	}
 	return outArr
+}
+
+func (m *Maildirbox) RenameMailbox(oldName string, newName string) error {
+	fi, err := os.Stat("."+oldName)
+	if err != nil {
+		return err
+	}
+	if !fi.IsDir() {
+		return errors.New(oldName + " mailbox does not exist")
+	}
+
+	err = os.Rename("." + oldName, "." + newName)
+	return err
+}
+
+func (m *Maildirbox) Search(searchStr string) []*Email {
+	outArr := make([]*Email, 0)
+	fi, err := os.Stat(".new")
+	if err != nil {
+		return outArr
+	}
+	if !fi.IsDir() {
+		return outArr
+	}
+	return outArr // meh
 }
 
